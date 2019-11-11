@@ -1,0 +1,18 @@
+[package]
+name = "rs-fshare"
+version = "0.1.0"
+authors = ["gaconkzk <gaconkzk@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+path = "src/lib/mod.rs"
+name = "fshare"
+
+[dependencies]
+serde = { version = "*", features = ["derive"] }
+serde_derive = "1.0.102"
+serde_json = "*"
+reqwest = { version = "0.10.0-alpha.1", features = ["blocking"] }
+clap = "2.33.0"
