@@ -17,6 +17,7 @@ serde_json = "*"
 reqwest = { version = "0.10.0-alpha.1", features = ["blocking", "json"] }
 clap = "2.33.0"
 dotenv = "*"
+exitcode = "*"
 
 [profile.release]
 opt-level = 'z'  # Optimize for size.

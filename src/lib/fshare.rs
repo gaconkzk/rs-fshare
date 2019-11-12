@@ -44,8 +44,9 @@ fn _create(email: String, password: String, vip: bool) -> Result<FsApi, Error> {
 pub fn make(matches: &ArgMatches) -> Result<FsApi, Error> {
   let email = matches.value_of("email").unwrap();
   let password = matches.value_of("password").unwrap();
-  let vip = matches.value_of("isvip");
-  _create(String::from(email), String::from(password), vip.unwrap().parse().unwrap())
+  let vip = matches.value_of("isvip").unwrap().parse().unwrap();
+
+  _create(String::from(email), String::from(password), vip)
 }
 
 impl FsApi {
