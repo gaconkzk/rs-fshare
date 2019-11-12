@@ -11,6 +11,7 @@ pub fn make<'a>() -> ArgMatches<'a> {
             .long("email")
             .env("VIP_MAIL")
             .help("fshare email")
+            .hide_env_values(true)
             .takes_value(true)
         )
         .arg(
@@ -19,6 +20,7 @@ pub fn make<'a>() -> ArgMatches<'a> {
             .long("password")
             .env("VIP_PASS")
             .help("fshare password")
+            .hide_env_values(true)
             .takes_value(true)
         )
         .arg(
