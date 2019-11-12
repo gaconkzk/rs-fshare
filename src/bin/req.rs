@@ -8,11 +8,10 @@ fn main() -> Result<(), Error> {
   dotenv().ok();
 
   let config = fshare::cmd::make();
-  let api = &mut fshare::make(&config);
+  let api = &mut fshare::make(&config)?;
 
-  api.login().unwrap_or_else(|error| {
-    panic!("Error: {}", error);
-  });
+  let location = api.get(config.value_of("code").unwrap())?;
+  println!("Location: {}", location);
 
   Ok(())
 }

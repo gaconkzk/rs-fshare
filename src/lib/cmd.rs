@@ -29,6 +29,14 @@ pub fn make<'a>() -> ArgMatches<'a> {
             .possible_values(&["true", "false"])
             .default_value("false")
         )
+        .arg(
+          Arg::with_name("code")
+            .short("c")
+            .long("code")
+            .help("fshare code")
+            .takes_value(true)
+            .required(true)
+        )
         .get_matches();
 
   return matches;

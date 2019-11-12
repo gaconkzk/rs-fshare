@@ -1,18 +1,24 @@
-use serde:: { Serialize };
-
-use serde_json:: { Value };
+use serde:: { Deserialize, Serialize };
 
 use clap:: {ArgMatches };
 
 use reqwest:: blocking:: { Client };
-use reqwest:: { StatusCode, Error };
+use reqwest:: { Error };
 
+#[derive(Debug)]
 pub struct FsApi {
   email: String,
   password: String,
   vip: bool,
-  token: String,
-  session: String, // session
+  session: Option<LoginResponse>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct LoginResponse {
+  code: u64,
+  msg: String,
+  session_id: Option<String>,
+  token: Option<String>,
 }
 
 #[derive(Serialize, Debug)]
@@ -22,31 +28,28 @@ pub struct FsVipRequest<'a> {
   app_key: &'a str,
 }
 
-fn _create(email: String, password: String, vip: bool) -> FsApi {
-  FsApi {
+fn _create(email: String, password: String, vip: bool) -> Result<FsApi, Error> {
+  let mut api = FsApi {
     email: email,
     password: password,
-    token: String::from(""),
-    session: String::from(""),
+    session: None,
     vip: vip,
-  }
+  };
+
+  api.login()?;
+
+  Ok(api)
 }
 
-pub fn make(matches: &ArgMatches) -> FsApi {
+pub fn make(matches: &ArgMatches) -> Result<FsApi, Error> {
   let email = matches.value_of("email").unwrap();
   let password = matches.value_of("password").unwrap();
   let vip = matches.value_of("isvip");
   _create(String::from(email), String::from(password), vip.unwrap().parse().unwrap())
 }
 
-pub trait FsLogin {
-  fn login(&mut self);
-}
-
-
-
 impl FsApi {
-  pub fn login(&mut self) -> Result<(), Error> {
+  fn login(&mut self) -> Result<(), Error> {
     if self.vip {
       self._login_vip()?
     } else {
@@ -54,6 +57,10 @@ impl FsApi {
     }
 
     Ok(())
+  }
+
+  pub fn get(&mut self, code: &str) -> Result<String, Error> {
+    Ok("".to_string())
   }
 
   fn _login_vip(&mut self) -> Result<(), Error> {
@@ -71,25 +78,13 @@ impl FsApi {
       .json(&request)
       .send()?;
 
-    let status = res.status();
     let data = &res.text()?;
-    let v: Value = serde_json::from_str(data.as_ref()).unwrap();
+    self.session = match serde_json::from_str(data.as_ref()) {
+      Ok(val) => Some(val),
+      _ => None,
+    };
 
-    match status {
-      StatusCode::OK => {
-        self.session = v["session_id"].as_str().unwrap().to_string();
-        self.token = v["token"].as_str().unwrap().to_string();
-
-        println!("{:?}", v);
-      },
-      s => {
-        let code: u64 = v["code"].as_u64().unwrap();
-        let msg: &str = v["msg"].as_str().unwrap();
-        println!("Received response status: {:?}", s);
-        println!("Code: {}", code);
-        println!("Message: {}", msg);
-      },
-    }
+    println!("{:?}", self);
 
     Ok(())
   }
