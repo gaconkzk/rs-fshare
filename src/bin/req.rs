@@ -1,5 +1,3 @@
-use reqwest::Error;
-
 use std;
 use exitcode;
 
@@ -7,15 +5,15 @@ use fshare;
 
 use dotenv::dotenv;
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<(), fshare::Error> {
   dotenv().ok();
 
   let config = fshare::cmd::make();
   let vip: bool = config.value_of("isvip").unwrap().parse().unwrap();
-  if !vip {
-    println!("Not implement for non-VIP!");
-    std::process::exit(exitcode::DATAERR);
-  }
+  // if !vip {
+  //   println!("Not implement for non-VIP!");
+  //   std::process::exit(exitcode::DATAERR);
+  // }
 
   // go
   let api = &mut fshare::make(&config)?;
